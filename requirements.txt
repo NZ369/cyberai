@@ -16,3 +16,4 @@ wikipedia
 faiss-cpu
 duckduckgo-search
 cohere
+numexpr
