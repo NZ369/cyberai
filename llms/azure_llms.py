@@ -32,4 +32,10 @@ def create_llm(temp=0.4, max_tokens=2000):
                       )
 
 def create_azure_embedder():
-    return OpenAIEmbeddings(deployment="ADA", model=OPENAI_EMBEDDING_MODEL_NAME, chunk_size=1)
+    return OpenAIEmbeddings(
+    deployment="ADA",
+    model="text-embedding-ada-002",
+    openai_api_type='azure',
+    chunk_size=1,
+    show_progress_bar=True
+)
