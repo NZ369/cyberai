@@ -17,3 +17,4 @@ faiss-cpu
 duckduckgo-search
 cohere
 numexpr
+langchain-experimental
