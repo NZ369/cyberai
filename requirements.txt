@@ -1,6 +1,6 @@
-langchain==0.0.313
-langsmith==0.0.43
-openai==0.28.1
+langchain
+langsmith
+openai
 Pillow==10.0.1
 pinecone_client==2.2.4
 pydantic==1.10.9
@@ -8,7 +8,11 @@ PyPDF2==3.0.1
 python-dotenv==1.0.0
 Requests==2.31.0
 shodan==1.29.1
-streamlit==1.27.2
-streamlit_extras==0.3.4
-streamlit_feedback==0.1.2
-tiktoken==0.5.1
+streamlit
+streamlit_extras
+streamlit_feedback
+tiktoken
+wikipedia
+faiss-cpu
+duckduckgo-search
+cohere
