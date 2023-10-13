@@ -15,5 +15,6 @@ wikipedia
 faiss-cpu
 duckduckgo-search
 cohere
+langchainhub
 numexpr
 langchain-experimental
