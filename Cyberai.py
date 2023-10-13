@@ -7,16 +7,12 @@ from langchain.callbacks import StreamlitCallbackHandler
 from PIL import Image
 import streamlit as st
 from datetime import datetime
-
-
-import streamlit as st
 from streamlit_feedback import streamlit_feedback
-from langchain.callbacks.tracers.run_collector import RunCollectorCallbackHandler
 from langchain.memory import StreamlitChatMessageHistory, ConversationBufferMemory
+from langchain.schema import ChatMessage, AIMessage, HumanMessage
 from langchain.schema.runnable import RunnableConfig
 from langsmith import Client
 from langchain.callbacks.tracers.langchain import wait_for_all_tracers
-import os
 
 from tools.local_qa_tools import create_qa_retriever
 
@@ -37,16 +33,16 @@ st.subheader("Cybersecurity Copilot")
 download_str = []
 
 # Store LLM generated responses
-if "messages" not in st.session_state.keys() or len(st.session_state.messages) == 0:
-    st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
+if "messages" not in st.session_state or len(st.session_state.messages) == 0:
+    st.session_state.messages = [ChatMessage(role="assistant", content="Hello, how may I assist you?")]
 
 # Display chat messages
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+    with st.chat_message(message.role):
+        st.write(message.content)
         
 def clear_chat_history():
-    st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
+    st.session_state.messages = [ChatMessage(role="assistant", content="Hello, how may I assist you?")]
     st.session_state.trace_link = None
     st.session_state.run_id = None
 
@@ -69,29 +65,28 @@ with st.sidebar:
    
 # User-provided prompt
 if prompt := st.chat_input(placeholder="Need help? Just ask."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.write(prompt)
     download_str.append("User: "+prompt)
+    st.session_state.messages.append(ChatMessage(role="user", content=prompt))
     
-# Generate response from AI
-if st.session_state.messages[-1]["role"] != "assistant":
+    # Generate response from AI
+if st.session_state.messages[-1].role != "assistant":
     with st.chat_message("assistant"):
         try:
             # Set up the Streamlit callback handler
             st_callback = StreamlitCallbackHandler(st.container())
             message_placeholder = st.empty()
             full_response = ""
-            if prompt == "":
-                prompt = "Tell me a fun cybersecurity fact"
-            assistant_response = main_agent.run(prompt, callbacks=[st_callback])
-
-            # Simulate a streaming response with a slight delay
+            output = ""
             input_dict = {"input": prompt}
-            for chunk in assistant_response.split():
+            assistant_response = main_agent(input_dict, callbacks=[st_callback])
+            output = assistant_response['output']
+            
+            # Simulate a streaming response with a slight delay
+            for chunk in output.split():
                 full_response += chunk + " "
                 time.sleep(0.05)
-
                 # Add a blinking cursor to simulate typing
                 message_placeholder.markdown(full_response + "▌")
             
@@ -100,7 +95,7 @@ if st.session_state.messages[-1]["role"] != "assistant":
         except Exception as e:
             full_response = str(e)
             
-    message = {"role": "assistant", "content": full_response}
+    message = ChatMessage(role="assistant", content=full_response)
     st.session_state.messages.append(message)
     download_str.append("AI: "+full_response)
     

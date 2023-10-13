@@ -13,6 +13,13 @@ from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.chains import RetrievalQA
 from dotenv import load_dotenv
+from langchain.tools import BaseTool, Tool
+from typing import Optional, Type
+
+from langchain.callbacks.manager import (
+    AsyncCallbackManagerForToolRun,
+    CallbackManagerForToolRun,
+)
 
 #load environment variables
 load_dotenv()
@@ -31,14 +38,24 @@ embeddings = create_azure_embedder()
 vectorstore = Pinecone.from_existing_index(index_name, embeddings, "text")
 llm = create_llm(max_tokens=2000, temp=0)
 
-# Define a data model for the document input
-class DocumentInput(BaseModel):
-    question: str = Field()
+class knowledgebase_tool(BaseTool):
+    name = "Cybersecurity Knowledgebase"
+    description = "Searches and returns information regarding cybersecurity practices and procedures"
+    def _run(
+        self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None
+    ) -> str:
+        """Use the tool."""
+        qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectorstore.as_retriever(search_kwargs={'k': 3}))
+        return qa.run(query)
+
+    async def _arun(
+        self, query: str, run_manager: Optional[AsyncCallbackManagerForToolRun] = None
+    ) -> str:
+        """Use the tool asynchronously."""
+        raise NotImplementedError("custom_search does not support async")
     
 main_retriever_tool = Tool(
-                    args_schema=DocumentInput,
-                    name="Cybersecurity Knowledgebase",
-                    description="Searches and returns information regarding cybersecurity practices and procedures.",
-                    func=RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectorstore.as_retriever(search_kwargs={'k': 3})),
-                    # return_source_documents=True
-                )
+    name = "Cybersecurity Knowledgebase",
+    description = "Searches and returns information regarding cybersecurity practices and procedures",
+    func= knowledgebase_tool().run
+)

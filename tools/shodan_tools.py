@@ -138,7 +138,7 @@ class shodan_search_tool(BaseTool):
     ) -> str:
         """Use the tool."""
         try:
-            limit = 8
+            limit = 7
             input = search_input_chain.run(query)
             response = shodan_search(input, limit)  
             return response
