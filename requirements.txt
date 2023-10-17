@@ -1,4 +1,4 @@
-langchain
+langchain==v0.0.271
 langsmith
 openai
 pinecone_client

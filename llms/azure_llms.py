@@ -36,6 +36,5 @@ def create_azure_embedder():
     deployment="ADA",
     model="text-embedding-ada-002",
     openai_api_type='azure',
-    chunk_size=1,
-    show_progress_bar=True
+    chunk_size=1
 )

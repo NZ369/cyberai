@@ -4,10 +4,8 @@ from langchain.agents import Tool
 from pydantic import BaseModel, Field
 from llms.azure_llms import create_azure_embedder, create_llm
 from langchain.document_loaders import DirectoryLoader, UnstructuredPDFLoader, OnlinePDFLoader, PyPDFLoader
-from langchain.agents.agent_toolkits import create_retriever_tool
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.retrievers import BM25Retriever, EnsembleRetriever
 from langchain.vectorstores import Pinecone
 from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
